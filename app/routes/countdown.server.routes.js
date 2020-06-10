@@ -1,0 +1,11 @@
+const countdown = require('../controllers/countdown.server.controller');
+
+
+module.exports = function(app) {
+    app.route('/api/getProducts')
+        .get(countdown.getProducts)
+    app.route('/api/getDates')
+        .get(countdown.getDates)
+    app.route('/api/getTypes')
+        .get(countdown.getTypes)
+};
