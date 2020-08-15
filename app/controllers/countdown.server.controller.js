@@ -2,6 +2,7 @@ const countdown = require('../models/countdown.server.model');
 
 exports.getProducts = async function(req, res) {
     let hit = false;
+    let queryWithOffset = "";
     const type = req.query.type;
     const name = req.query.dateOfSpecials;
     const search = req.query.search;
@@ -30,10 +31,15 @@ exports.getProducts = async function(req, res) {
         query += " LIMIT " + limit;
     }
     if (offset != null) {
-        query += " OFFSET " + offset;
+        queryWithOffset = query + " OFFSET " + offset;
     }
     try {
-        const result = await countdown.getAll(query);
+        let result
+        if (queryWithOffset != ""){
+            result = await countdown.getAll(queryWithOffset);
+        }else {
+            result = await countdown.getAll(query);
+        }
         const total = await countdown.getCount(query);
         res.status(200)
             .json({
