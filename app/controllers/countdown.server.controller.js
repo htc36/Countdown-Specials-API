@@ -74,4 +74,32 @@ exports.getTypes = async function(req, res) {
             .send(`ERROR getting data ${err}`);
     }
 }
+exports.getPreviousPrices = async function(req, res) {
+    try {
+        const barcode = req.query.barcode;
+        if (barcode == null) {
+            res.status(400)
+                .send("Need a valid barcode");
+            return;
+        }
+        const history = await countdown.getProductsHistory(barcode)
+        let dateList = []
+        let priceList = []
+        let date
+        for (let index = 0; index < history.length; index++) {
+            date = new Date(history[index]['date'])
+            dateList.push(date.toLocaleDateString('en-nz'))
+            priceList.push(history[index]['salePrice'])
+        }
+        res.status(200)
+            .json({
+                dates: dateList,
+                prices: priceList
+            });
+
+    } catch (err) {
+        res.status(500)
+            .send(`ERROR getting data ${err}`);
+    }
+}
 

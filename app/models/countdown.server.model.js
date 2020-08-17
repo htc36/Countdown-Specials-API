@@ -31,3 +31,11 @@ exports.getTypes = async function() {
     connection.release();
     return rows;
 };
+exports.getProductsHistory = async function(barcode) {
+    let connection = await db.getPool().getConnection();
+    connection.changeUser({database : "specials3"});
+    const q = "SELECT date, salePrice FROM distinctProducts JOIN priceOnDate ON distinctProducts.barcode = priceOnDate.barcode AND priceOnDate.barcode =" + barcode
+    const [rows, fields] = await connection.query(q);
+    connection.release();
+    return rows;
+};
