@@ -89,7 +89,7 @@ exports.getPreviousPrices = async function(req, res) {
         for (let index = 0; index < history.length; index++) {
             date = new Date(history[index]['date'])
             dateList.push(date.toLocaleDateString('en-nz'))
-            priceList.push(history[index]['salePrice'])
+            priceList.push(parseFloat(history[index]['salePrice']))
         }
         res.status(200)
             .json({
