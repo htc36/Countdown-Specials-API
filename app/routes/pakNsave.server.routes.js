@@ -6,6 +6,6 @@ module.exports = function(app) {
         .get(convo.test)
     app.route('/getProduct')
         .get(convo.getSingleProduct)
-    app.route('/getProduct')
+    app.route('/linkProducts')
         .post(convo.linkProducts)
 };
