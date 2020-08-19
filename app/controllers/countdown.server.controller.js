@@ -20,7 +20,7 @@ exports.getProducts = async function(req, res) {
         query += " AND type = '" + type + "'";
     }
     if (search != null && search.length != 0){
-        query += " Where MATCH(name, brand, volSize) AGAINST('" + search +  "' IN NATURAL LANGUAGE MODE)"
+        query += " Where MATCH(name, brand, volSize) AGAINST(\"" + search +  "\" IN NATURAL LANGUAGE MODE)"
     }
     if (sort != null) {
         query += " ORDER BY " +sort;
