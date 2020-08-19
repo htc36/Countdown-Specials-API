@@ -36,3 +36,20 @@ exports.getSingleProduct = async function(req, res) {
     }
 }
 
+exports.linkProducts = async function(req, res) {
+    const pakNSave = req.query.pakNSave;
+    const countdown = req.query.countDown;
+    const query = "INSERT INTO `linkedSupermarkets` (`id`, `countdownID`, `pakNsaveID`) VALUES (NULL, '" + countdown +
+        "', '" + pakNSave + "')"
+    try {
+        const result = await pakNsave.getSingleUnJoinedProduct(query);
+        res.status(200)
+            .send(
+                "OK"
+            );
+    } catch (err) {
+        res.status(500)
+            .send(`ERROR getting convos ${err}`);
+    }
+}
+
