@@ -10,12 +10,17 @@ exports.getProducts = async function(req, res) {
     const limit = req.query.limit;
     const sort = req.query.sort;
     // let query = "FROM `" + name + "` WHERE";
-    let query = "FROM distinctProducts JOIN priceOnDate ON distinctProducts.barcode = priceOnDate.barcode AND date = '" + name + "'"
+    let query
+    if (name != null) {
+        query = "FROM distinctProducts JOIN priceOnDate ON distinctProducts.barcode = priceOnDate.barcode AND date = '" + name + "'"
+    }else {
+        query = "FROM distinctProducts"
+    }
     if (type != 'All' &&  type != null){
         query += " AND type = '" + type + "'";
     }
     if (search != null && search.length != 0){
-        query += " AND name LIKE '%" + search + "%'";
+        query += " Where MATCH(name, brand, volSize) AGAINST('" + search +  "' IN NATURAL LANGUAGE MODE)"
     }
     if (sort != null) {
         query += " ORDER BY " +sort;
