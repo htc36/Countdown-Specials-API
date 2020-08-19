@@ -8,10 +8,13 @@ exports.getAll = async function(query) {
     return rows;
 };
 
-exports.getSingleUnJoinedProduct = async function(query) {
+exports.getSingleUnJoinedProduct = async function(query, offset) {
+    const countQuery = "SELECT COUNT(*) " + query
+    query ="SELECT * " + query + " LIMIT 1 OFFSET " + offset
     let connection = await db.getPool().getConnection();
     connection.changeUser({database : "specials3"});
     const [rows, fields] = await connection.query(query);
+    const [row2, fields2] = await connection.query(countQuery);
     connection.release();
-    return rows;
+    return [rows, row2];
 };
