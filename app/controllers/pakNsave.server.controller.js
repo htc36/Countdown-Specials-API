@@ -16,7 +16,7 @@ exports.test = async function(req, res) {
 exports.getSingleProduct = async function(req, res) {
     const cat1 = req.query.cat1;
     const cat2 = req.query.cat2;
-    let offset = req.query.cat3;
+    let offset = req.query.offset;
     if (offset == null) {
         offset = 0
     }
