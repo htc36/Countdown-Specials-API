@@ -10,8 +10,8 @@ exports.connect = async function() {
         host: process.env.HOST,
         user: "root",
         password: process.env.PASSWORD,
-        // database: process.env.DATABASE,
-       // port: process.env.PORT,
+        database: process.env.DATABASE,
+        // port: process.env.PORT,
     });
     await state.pool.getConnection();
     console.log('Successfully connected to the database');

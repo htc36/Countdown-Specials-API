@@ -12,9 +12,9 @@ exports.getProducts = async function(req, res) {
     // let query = "FROM `" + name + "` WHERE";
     let query
     if (name != null) {
-        query = "FROM distinctProducts JOIN priceOnDate ON distinctProducts.barcode = priceOnDate.barcode AND date = '" + name + "'"
+        query = "FROM cdProducts JOIN cdPrices ON cdProducts.barcode = cdPrices.barcode AND date = '" + name + "'"
     }else {
-        query = "FROM distinctProducts"
+        query = "FROM cdProducts"
     }
     if (type != 'All' &&  type != null){
         query += " AND type = '" + type + "'";

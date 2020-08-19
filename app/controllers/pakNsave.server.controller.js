@@ -20,7 +20,7 @@ exports.getSingleProduct = async function(req, res) {
     if (offset == null) {
         offset = 0
     }
-    const query = "select * from distinctProducts where distinctProducts.productId NOT IN (SELECT pakNsaveID " +
+    const query = "select * from psProducts where psProducts.productId NOT IN (SELECT pakNsaveID " +
         "from linkedSupermarkets WHERE linkedSupermarkets.pakNsaveID = productId) " +
         "AND category1 = '" + cat1 + "' AND category2 = '" + cat2 + "' LIMIT 1 OFFSET " + offset
 
