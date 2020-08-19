@@ -16,9 +16,13 @@ exports.test = async function(req, res) {
 exports.getSingleProduct = async function(req, res) {
     const cat1 = req.query.cat1;
     const cat2 = req.query.cat2;
+    let offset = req.query.cat3;
+    if (offset == null) {
+        offset = 0
+    }
     const query = "select * from distinctProducts where distinctProducts.productId NOT IN (SELECT pakNsaveID " +
         "from linkedSupermarkets WHERE linkedSupermarkets.pakNsaveID = productId) " +
-        "AND category1 = '" + cat1 + "' AND category2 = '" + cat2 + "' LIMIT 1"
+        "AND category1 = '" + cat1 + "' AND category2 = '" + cat2 + "' LIMIT 1 OFFSET = " + offset
 
     try {
         const result = await pakNsave.getSingleUnJoinedProduct(query);
