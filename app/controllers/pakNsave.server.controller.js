@@ -25,7 +25,6 @@ exports.getSingleProduct = async function(req, res) {
         "AND category1 = '" + cat1 + "' AND category2 = '" + cat2 + "'"
 
     try {
-        console.log(query)
         const result = await pakNsave.getSingleUnJoinedProduct(query, offset);
         res.status(200)
             .send(result);
@@ -41,7 +40,7 @@ exports.linkProducts = async function(req, res) {
     const query = "INSERT INTO `linkedSupermarkets` (`id`, `countdownID`, `pakNsaveID`) VALUES (NULL, '" + countdown +
         "', '" + pakNSave + "')"
     try {
-        const result = await pakNsave.getSingleUnJoinedProduct(query);
+        await pakNsave.getAll(query);
         res.status(200)
             .send(
                 "OK"
