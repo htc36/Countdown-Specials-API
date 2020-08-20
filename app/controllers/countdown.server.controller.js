@@ -1,4 +1,5 @@
 const countdown = require('../models/countdown.server.model');
+const pakNsave = require('../models/pakNsave.server.model');
 
 exports.getProducts = async function(req, res) {
     let queryWithOffset = "";
@@ -107,4 +108,24 @@ exports.getPreviousPrices = async function(req, res) {
             .send(`ERROR getting data ${err}`);
     }
 }
+exports.getSingleProduct = async function(req, res) {
+    const cat1 = req.query.cat1;
+    let offset = req.query.offset;
+    if (offset == null) {
+        offset = 0
+    }
+    const query = "from cdProducts where cdProducts.code NOT IN (SELECT countdownID " +
+        "from linkedSupermarkets WHERE linkedSupermarkets.countdownID = productId) " +
+        "AND type = '" + cat1
+
+    try {
+        const result = await pakNsave.getSingleUnJoinedProduct(query, offset);
+        res.status(200)
+            .send(result);
+    } catch (err) {
+        res.status(500)
+            .send(`ERROR getting convos ${err}`);
+    }
+}
+
 
