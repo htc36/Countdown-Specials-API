@@ -10,4 +10,6 @@ module.exports = function(app) {
         .get(countdown.getTypes)
     app.route('/api/getHistory')
         .get(countdown.getPreviousPrices)
+    app.route('/api/countdown/getSingleProduct')
+        .get(countdown.getSingleProduct)
 };
