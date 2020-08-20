@@ -116,7 +116,7 @@ exports.getSingleProduct = async function(req, res) {
     }
     const query = "from cdProducts where cdProducts.code NOT IN (SELECT countdownID " +
         "from linkedSupermarkets WHERE linkedSupermarkets.countdownID = productId) " +
-        "AND type = '" + cat1
+        "AND type = '" + cat1 + "'"
 
     try {
         const result = await pakNsave.getSingleUnJoinedProduct(query, offset);
