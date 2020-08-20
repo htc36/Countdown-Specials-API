@@ -115,7 +115,7 @@ exports.getSingleProduct = async function(req, res) {
         offset = 0
     }
     const query = "from cdProducts where cdProducts.code NOT IN (SELECT countdownID " +
-        "from linkedSupermarkets WHERE linkedSupermarkets.countdownID = productId) " +
+        "from linkedSupermarkets WHERE linkedSupermarkets.countdownID = code) " +
         "AND type = '" + cat1 + "'"
 
     try {
