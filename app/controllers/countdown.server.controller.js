@@ -13,7 +13,7 @@ exports.getProducts = async function(req, res) {
     // let query = "FROM `" + name + "` WHERE";
     let query
     if (name != null) {
-        query = "FROM cdProducts JOIN cdPrices ON cdProducts.barcode = cdPrices.barcode AND date = '" + name + "'"
+        query = "FROM cdProducts JOIN cdPrices ON cdProducts.code = cdPrices.code AND date = '" + name + "'"
     }else {
         query = "FROM cdProducts"
     }
