@@ -19,11 +19,11 @@ exports.getProducts = async function(req, res) {
     }
     if (search != null && search.length != 0){
         query += " Where MATCH(name, quantityType) AGAINST(\"" + search +  "\" IN NATURAL LANGUAGE MODE)"
-        if (quantity != null) {
+        if (quantity != null && quantity != "") {
             query += " AND quantityType = '" + quantity + "'"
         }
     } else {
-        if (quantity != null) {
+        if (quantity != null && quantity != "") {
             query += " WHERE quantityType = '" + quantity + "'"
         }
     }
