@@ -68,8 +68,15 @@ exports.getDates = async function(req, res) {
     }
 }
 exports.getTypes = async function(req, res) {
+    const date = req.query.date;
+    let query
+    query = "SELECT DISTINCT(type) from cdProducts"
+    if(date != null) {
+        query += " Where code IN (SELECT DISTINCT(cdProducts.code) from cdProducts JOIN " +
+            "cdPrices ON cdProducts.code = cdPrices.code and cdPrices.date > '" + date + "')"
+    }
     try {
-        const types = await countdown.getTypes();
+        const types = await countdown.getTypes(query);
         res.status(200)
             .send({
                 types
@@ -111,12 +118,17 @@ exports.getPreviousPrices = async function(req, res) {
 exports.getSingleProduct = async function(req, res) {
     const cat1 = req.query.cat1;
     let offset = req.query.offset;
+    let date = req.query.date;
     if (offset == null) {
         offset = 0
     }
-    const query = "from cdProducts where cdProducts.code NOT IN (SELECT countdownID " +
+    let query = "from cdProducts where cdProducts.code NOT IN (SELECT countdownID " +
         "from linkedSupermarkets WHERE linkedSupermarkets.countdownID = code) " +
         "AND type = '" + cat1 + "'"
+    if (date != null) {
+        query += " AND code IN (SELECT DISTINCT(cdProducts.code) from cdProducts JOIN " +
+            "cdPrices ON cdProducts.code = cdPrices.code and cdPrices.date > '" + date + "')"
+    }
 
     try {
         const result = await pakNsave.getSingleUnJoinedProduct(query, offset);
