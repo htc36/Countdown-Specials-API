@@ -129,6 +129,7 @@ exports.getSingleProduct = async function(req, res) {
         query += " AND code IN (SELECT DISTINCT(cdProducts.code) from cdProducts JOIN " +
             "cdPrices ON cdProducts.code = cdPrices.code and cdPrices.date > '" + date + "')"
     }
+    query += " ORDER by RAND()"
 
     try {
         const result = await pakNsave.getSingleUnJoinedProduct(query, offset);
