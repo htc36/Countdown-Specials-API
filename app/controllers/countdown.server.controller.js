@@ -117,22 +117,19 @@ exports.getPreviousPrices = async function(req, res) {
 }
 exports.getSingleProduct = async function(req, res) {
     const cat1 = req.query.cat1;
-    let offset = req.query.offset;
     let date = req.query.date;
-    if (offset == null) {
-        offset = 0
-    }
-    let query = "from cdProducts where cdProducts.code NOT IN (SELECT countdownID " +
-        "from linkedSupermarkets WHERE linkedSupermarkets.countdownID = code) " +
-        "AND type = '" + cat1 + "'"
-    if (date != null) {
-        query += " AND code IN (SELECT DISTINCT(cdProducts.code) from cdProducts JOIN " +
-            "cdPrices ON cdProducts.code = cdPrices.code and cdPrices.date > '" + date + "')"
-    }
-    query += " ORDER by RAND()"
+    let count = req.query.isCount
 
+    let queryStart = "SELECT i.name, i.brand, i.volsize, i.type, i.code, i.image, p.salePrice"
+    let countQuery = "SELECT COUNT(*)"
+
+    let result
     try {
-        const result = await pakNsave.getSingleUnJoinedProduct(query, offset);
+        if (count == null) {
+            result = await countdown.getProductsThatAreNotLinked(queryStart, date, cat1);
+        }else {
+            result = await countdown.getProductsThatAreNotLinked(countQuery, date, cat1);
+        }
         res.status(200)
             .send(result);
     } catch (err) {

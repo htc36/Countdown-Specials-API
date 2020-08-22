@@ -38,3 +38,16 @@ exports.getProductsHistory = async function(barcode) {
     connection.release();
     return rows;
 };
+exports.getProductsThatAreNotLinked = async function(selection, date, cat1) {
+    let connection = await db.getPool().getConnection();
+    connection.changeUser({database : "specials4"});
+
+    let query3 = " from cdProducts i INNER JOIN cdPrices p ON i.code = p.code AND p.date > '" + date + "' AND i.type" +
+        " = '" + cat1 + "' AND i.code LEFT OUTER JOIN linkedSupermarkets l ON i.code = l.countdownID WHERE " +
+        "l.countdownID is null ORDER BY RAND() LIMIT 1 "
+    console.log(selection)
+
+    const [rows, fields] = await connection.query(selection + query3);
+    connection.release();
+    return rows;
+};
