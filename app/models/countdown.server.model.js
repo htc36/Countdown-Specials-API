@@ -33,7 +33,7 @@ exports.getTypes = async function(query) {
 exports.getProductsHistory = async function(code) {
     let connection = await db.getPool().getConnection();
     connection.changeUser({database : "specials4"});
-    const q = "SELECT date, salePrice FROM cdProducts JOIN cdPrices ON cdProducts.code = cdPrices.code AND cdPrices.code =" + code
+    const q = "SELECT date, salePrice, name, brand, salePrice, origPrice, volSize FROM cdProducts JOIN cdPrices ON cdProducts.code = cdPrices.code AND cdPrices.code =" + code
     const [rows, fields] = await connection.query(q);
     connection.release();
     return rows;

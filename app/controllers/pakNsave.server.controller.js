@@ -102,33 +102,63 @@ exports.getHistory = async function (req, res) {
     const code = req.query.code;
     const location = req.query.location;
     let history
+    let countDownHistory
+    let result = {}
     try {
         history = await pakNsave.getConnectedProductHistory(location, code)
     } catch (err) {
         res.status(500)
             .send(`ERROR getting convos ${err}`);
     }
-    if (history.length == 0) {
-        res.status(404).send("No associated products")
-        return
+    try {
+        countDownHistory = await countdown.getProductsHistory(code)
+    } catch (err) {
+        res.status(500)
+            .send(`ERROR getting convos ${err}`);
     }
+    let countDownDateList = []
+    let countDownPriceList = []
+    let countDownDate
+    for (let index = 0; index < countDownHistory.length; index++) {
+        countDownDate = new Date(countDownHistory[index]['date'])
+        countDownDateList.push(countDownDate.toLocaleDateString('en-nz'))
+        countDownPriceList.push(parseFloat(countDownHistory[index]['salePrice']))
+    }
+    result["countdown"] = {}
+    result["countdown"]["date"] = countDownDateList
+    result["countdown"]["price"] = countDownPriceList
+    result["countdown"]["name"] = countDownHistory[0]['name']
+    result["countdown"]["brand"] = countDownHistory[0]['brand']
+    result["countdown"]["salePrice"] = countDownHistory[0]['salePrice']
+    result["countdown"]["origPrice"] = countDownHistory[0]['origPrice']
+    result["countdown"]["volSize"] = countDownHistory[0]['volSize']
+    console.log(result)
 
     let dateList = []
     let priceList = []
     let date
+    var item = {}
     for (let index = 0; index < history.length; index++) {
         date = new Date(history[index]['date'])
         dateList.push(date.toLocaleDateString('en-nz'))
         priceList.push(parseFloat(history[index]['price']))
+        if(item.hasOwnProperty(history[index]["productId"])) {
+            item[history[index]["productId"]]['date'].push(date.toLocaleDateString('en-nz'))
+            item[history[index]["productId"]]['price'].push(history[index]['price'])
+        } else {
+            item[history[index]["productId"]] = {}
+            item[history[index]["productId"]]['date'] = [date.toLocaleDateString('en-nz')]
+            item[history[index]["productId"]]['price'] = [history[index]['price']]
+            item[history[index]["productId"]]['productId'] = history[index]['productId']
+            item[history[index]["productId"]]['name'] = history[index]['name']
+            item[history[index]["productId"]]['quantityType'] = history[index]['quantityType']
+        }
     }
-    const finalRecord = history[history.length - 1]
+    const dictValues = Object.values(item);
+    result['paknsave'] = dictValues
     res.status(200)
-        .json({
-            dates: dateList,
-            prices: priceList,
-            productId: finalRecord['productId'],
-            name: finalRecord['name'],
-            quantityType: finalRecord['quantityType']
-        });
+        .send(
+            result
+       );
 }
 
