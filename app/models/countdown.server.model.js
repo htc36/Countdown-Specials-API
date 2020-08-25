@@ -30,10 +30,10 @@ exports.getTypes = async function(query) {
     connection.release();
     return rows;
 };
-exports.getProductsHistory = async function(barcode) {
+exports.getProductsHistory = async function(code) {
     let connection = await db.getPool().getConnection();
     connection.changeUser({database : "specials4"});
-    const q = "SELECT date, salePrice FROM cdProducts JOIN cdPrices ON cdProducts.barcode = cdPrices.barcode AND cdPrices.barcode =" + barcode
+    const q = "SELECT date, salePrice FROM cdProducts JOIN cdPrices ON cdProducts.code = cdPrices.code AND cdPrices.code =" + code
     const [rows, fields] = await connection.query(q);
     connection.release();
     return rows;

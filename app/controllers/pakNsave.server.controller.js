@@ -98,3 +98,37 @@ exports.linkProducts = async function(req, res) {
     }
 }
 
+exports.getHistory = async function (req, res) {
+    const code = req.query.code;
+    const location = req.query.location;
+    let history
+    try {
+        history = await pakNsave.getConnectedProductHistory(location, code)
+    } catch (err) {
+        res.status(500)
+            .send(`ERROR getting convos ${err}`);
+    }
+    if (history.length == 0) {
+        res.status(404).send("No associated products")
+        return
+    }
+
+    let dateList = []
+    let priceList = []
+    let date
+    for (let index = 0; index < history.length; index++) {
+        date = new Date(history[index]['date'])
+        dateList.push(date.toLocaleDateString('en-nz'))
+        priceList.push(parseFloat(history[index]['price']))
+    }
+    const finalRecord = history[history.length - 1]
+    res.status(200)
+        .json({
+            dates: dateList,
+            prices: priceList,
+            productId: finalRecord['productId'],
+            name: finalRecord['name'],
+            quantityType: finalRecord['quantityType']
+        });
+}
+
