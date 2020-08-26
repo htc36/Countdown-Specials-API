@@ -129,10 +129,9 @@ exports.getHistory = async function (req, res) {
     result["countdown"]["price"] = countDownPriceList
     result["countdown"]["name"] = countDownHistory[0]['name']
     result["countdown"]["brand"] = countDownHistory[0]['brand']
-    result["countdown"]["salePrice"] = countDownHistory[0]['salePrice']
-    result["countdown"]["origPrice"] = countDownHistory[0]['origPrice']
+    result["countdown"]["salePrice"] = parseFloat(countDownHistory[0]['salePrice'])
+    result["countdown"]["origPrice"] = parseFloat(countDownHistory[0]['origPrice'])
     result["countdown"]["volSize"] = countDownHistory[0]['volSize']
-    console.log(result)
 
     let dateList = []
     let priceList = []
@@ -144,11 +143,11 @@ exports.getHistory = async function (req, res) {
         priceList.push(parseFloat(history[index]['price']))
         if(item.hasOwnProperty(history[index]["productId"])) {
             item[history[index]["productId"]]['date'].push(date.toLocaleDateString('en-nz'))
-            item[history[index]["productId"]]['price'].push(history[index]['price'])
+            item[history[index]["productId"]]['price'].push(parseFloat(history[index]['price']))
         } else {
             item[history[index]["productId"]] = {}
             item[history[index]["productId"]]['date'] = [date.toLocaleDateString('en-nz')]
-            item[history[index]["productId"]]['price'] = [history[index]['price']]
+            item[history[index]["productId"]]['price'] = [parseFloat(history[index]['price'])]
             item[history[index]["productId"]]['productId'] = history[index]['productId']
             item[history[index]["productId"]]['name'] = history[index]['name']
             item[history[index]["productId"]]['quantityType'] = history[index]['quantityType']
