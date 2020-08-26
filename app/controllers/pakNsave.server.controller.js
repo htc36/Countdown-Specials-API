@@ -110,54 +110,53 @@ exports.getHistory = async function (req, res) {
         res.status(500)
             .send(`ERROR getting convos ${err}`);
     }
-    try {
-        countDownHistory = await countdown.getProductsHistory(code)
-    } catch (err) {
-        res.status(500)
-            .send(`ERROR getting convos ${err}`);
-    }
+    let item = {}
+    let set = new Set()
     let countDownDateList = []
     let countDownPriceList = []
-    let countDownDate
-    for (let index = 0; index < countDownHistory.length; index++) {
-        countDownDate = new Date(countDownHistory[index]['date'])
-        countDownDateList.push(countDownDate.toLocaleDateString('en-nz'))
-        countDownPriceList.push(parseFloat(countDownHistory[index]['salePrice']))
+    let cdFinalRow
+    for (let index = 0; index < history.length; index++) {
+        const curItem = history[index]
+        if (curItem['date'] != null) {
+            set.add(new Date(history[index]['date']).toLocaleDateString('en-nz'))
+        } else {
+            set.add(new Date(history[index]['date2']).toLocaleDateString('en-nz'))
+        }
+        if (curItem["price"] != null) {
+            if (item.hasOwnProperty(curItem["productId"])) {
+                item[curItem["productId"]]['date'].push(set.size - 1)
+                item[curItem["productId"]]['price'].push(parseFloat(history[index]['price']))
+            } else {
+                item[curItem["productId"]] = {}
+                item[curItem["productId"]]['date'] = [set.size - 1]
+                item[curItem["productId"]]['price'] = [parseFloat(curItem['price'])]
+                item[curItem["productId"]]['productId'] = curItem['productId']
+                item[curItem["productId"]]['name'] = curItem['pakName']
+                item[curItem["productId"]]['quantityType'] = curItem['quantityType']
+            }
+        }
+        if (curItem['salePrice'] != null && !countDownDateList.includes(set.size - 1)) {
+            countDownDateList.push(set.size - 1)
+            countDownPriceList.push(parseFloat(curItem['salePrice']))
+            cdFinalRow = curItem
+        }
     }
     result["countdown"] = {}
     result["countdown"]["date"] = countDownDateList
     result["countdown"]["price"] = countDownPriceList
-    result["countdown"]["name"] = countDownHistory[0]['name']
-    result["countdown"]["brand"] = countDownHistory[0]['brand']
-    result["countdown"]["salePrice"] = parseFloat(countDownHistory[0]['salePrice'])
-    result["countdown"]["origPrice"] = parseFloat(countDownHistory[0]['origPrice'])
-    result["countdown"]["volSize"] = countDownHistory[0]['volSize']
+    result["countdown"]["name"] = cdFinalRow['name']
+    result["countdown"]["brand"] = cdFinalRow['brand']
+    result["countdown"]["salePrice"] = parseFloat(cdFinalRow['salePrice'])
+    result["countdown"]["origPrice"] = parseFloat(cdFinalRow['origPrice'])
+    result["countdown"]["volSize"] = cdFinalRow['volSize']
 
-    let dateList = []
-    let priceList = []
-    let date
-    var item = {}
-    for (let index = 0; index < history.length; index++) {
-        date = new Date(history[index]['date'])
-        dateList.push(date.toLocaleDateString('en-nz'))
-        priceList.push(parseFloat(history[index]['price']))
-        if(item.hasOwnProperty(history[index]["productId"])) {
-            item[history[index]["productId"]]['date'].push(date.toLocaleDateString('en-nz'))
-            item[history[index]["productId"]]['price'].push(parseFloat(history[index]['price']))
-        } else {
-            item[history[index]["productId"]] = {}
-            item[history[index]["productId"]]['date'] = [date.toLocaleDateString('en-nz')]
-            item[history[index]["productId"]]['price'] = [parseFloat(history[index]['price'])]
-            item[history[index]["productId"]]['productId'] = history[index]['productId']
-            item[history[index]["productId"]]['name'] = history[index]['name']
-            item[history[index]["productId"]]['quantityType'] = history[index]['quantityType']
-        }
-    }
-    const dictValues = Object.values(item);
-    result['paknsave'] = dictValues
+    result['paknsave'] = Object.values(item);
+
     res.status(200)
-        .send(
+        .json({
+            dates : Array.from(set),
             result
-       );
+            }
+        );
 }
 
