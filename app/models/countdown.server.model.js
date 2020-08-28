@@ -30,14 +30,14 @@ exports.getTypes = async function(query) {
     connection.release();
     return rows;
 };
-exports.getProductsHistory = async function(code) {
-    let connection = await db.getPool().getConnection();
-    connection.changeUser({database : "specials4"});
-    const q = "SELECT date, salePrice, name, brand, salePrice, origPrice, volSize FROM cdProducts JOIN cdPrices ON cdProducts.code = cdPrices.code AND cdPrices.code =" + code
-    const [rows, fields] = await connection.query(q);
-    connection.release();
-    return rows;
-};
+// exports.getProductsHistory = async function(code) {
+//     let connection = await db.getPool().getConnection();
+//     connection.changeUser({database : "specials4"});
+//     const q = "SELECT date, salePrice, name, brand, salePrice, origPrice, volSize FROM cdProducts JOIN cdPrices ON cdProducts.code = cdPrices.code AND cdPrices.code =" + code
+//     const [rows, fields] = await connection.query(q);
+//     connection.release();
+//     return rows;
+// };
 exports.getProductsThatAreNotLinked = async function(selection, date, cat1) {
     let connection = await db.getPool().getConnection();
     connection.changeUser({database : "specials4"});
@@ -51,3 +51,14 @@ exports.getProductsThatAreNotLinked = async function(selection, date, cat1) {
     connection.release();
     return rows;
 };
+
+exports.getProductsHistory = async function(code) {
+    const q = "SELECT cdProducts.name, cdProducts.brand, cdProducts.volSize, cdPrices.salePrice, cdPrices.date, " +
+        "cdPrices.origPrice FROM cdProducts JOIN cdPrices ON cdProducts.code = cdPrices.code AND cdProducts.code = '" + code + "'"
+    let connection = await db.getPool().getConnection();
+    connection.changeUser({database : "specials4"});
+    const [row2, fields2] = await connection.query(q);
+    connection.release();
+    return row2;
+};
+

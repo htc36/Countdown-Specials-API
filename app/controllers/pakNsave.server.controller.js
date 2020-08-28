@@ -106,10 +106,14 @@ exports.getHistory = async function (req, res) {
     let result = {}
     try {
         history = await pakNsave.getConnectedProductHistory(location, code)
+        if (history.length == 0) {
+            history = await countdown.getProductsHistory(code)
+        }
     } catch (err) {
         res.status(500)
             .send(`ERROR getting convos ${err}`);
     }
+
     let item = {}
     let set = new Set()
     let countDownDateList = []
