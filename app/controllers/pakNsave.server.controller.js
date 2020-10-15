@@ -153,8 +153,7 @@ exports.getHistory = async function (req, res) {
     result["countdown"]["salePrice"] = parseFloat(cdFinalRow['salePrice'])
     result["countdown"]["origPrice"] = parseFloat(cdFinalRow['origPrice'])
     result["countdown"]["volSize"] = cdFinalRow['volSize']
-    result["countdown"]["image"] = cdFinalRow['image']
-
+    result["countdown"]["image"] = cdFinalRow["image"]
     result['paknsave'] = Object.values(item);
 
     res.status(200)

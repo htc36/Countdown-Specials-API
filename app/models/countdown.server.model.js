@@ -54,7 +54,7 @@ exports.getProductsThatAreNotLinked = async function(selection, date, cat1) {
 
 exports.getProductsHistory = async function(code) {
     const q = "SELECT cdProducts.name, cdProducts.brand, cdProducts.volSize, cdPrices.salePrice, cdPrices.date, " +
-        "cdPrices.origPrice FROM cdProducts JOIN cdPrices ON cdProducts.code = cdPrices.code AND cdProducts.code = '" + code + "'"
+        "cdPrices.origPrice, cdProducts.image FROM cdProducts JOIN cdPrices ON cdProducts.code = cdPrices.code AND cdProducts.code = '" + code + "'"
     let connection = await db.getPool().getConnection();
     connection.changeUser({database : "specials4"});
     const [row2, fields2] = await connection.query(q);
