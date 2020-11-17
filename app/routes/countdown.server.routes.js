@@ -2,7 +2,7 @@ const countdown = require('../controllers/countdown.server.controller');
 
 
 module.exports = function(app) {
-    app.route('/api/getProducts')
+    app.route('/api/countdown/getProducts')
         .get(countdown.getProducts)
     app.route('/api/getDates')
         .get(countdown.getDates)
