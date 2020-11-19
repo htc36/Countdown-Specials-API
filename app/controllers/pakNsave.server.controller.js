@@ -98,27 +98,31 @@ exports.linkProducts = async function(req, res) {
     }
 }
 
-exports.getHistory = async function (req, res) {
+exports.getHistoryPakSave = async function (req, res) {
     const code = req.query.code;
     const location = req.query.location;
     let history
     let countDownHistory
     let result = {}
     try {
-        history = await pakNsave.getConnectedProductHistory(location, code)
+        history = await pakNsave.getConnectedProductHistoryPaknSave(location, code)
         if (history.length == 0) {
-            history = await countdown.getProductsHistory(code)
+            history = await pakNsave.getProductsHistory(code, location)
+            if(history.length == 0) {
+                res.status(404)
+                    .send("No history found");
+            }
         }
+
     } catch (err) {
         res.status(500)
             .send(`ERROR getting convos ${err}`);
     }
-
     let item = {}
     let set = new Set()
-    let countDownDateList = []
-    let countDownPriceList = []
-    let cdFinalRow
+    let pakSaveDateList = []
+    let pakSavePriceList = []
+    let psFinalRow
     for (let index = 0; index < history.length; index++) {
         const curItem = history[index]
         if (curItem['date'] != null) {
@@ -126,40 +130,41 @@ exports.getHistory = async function (req, res) {
         } else {
             set.add(new Date(history[index]['date2']).toLocaleDateString('en-nz'))
         }
-        if (curItem["price"] != null) {
-            if (item.hasOwnProperty(curItem["productId"])) {
-                item[curItem["productId"]]['date'].push(set.size - 1)
-                item[curItem["productId"]]['price'].push(parseFloat(history[index]['price']))
+        if (curItem["salePrice"] != null) {
+            if (item.hasOwnProperty(curItem["code"])) {
+                item[curItem["code"]]['date'].push(set.size - 1)
+                item[curItem["code"]]['price'].push(parseFloat(history[index]['salePrice']))
             } else {
-                item[curItem["productId"]] = {}
-                item[curItem["productId"]]['date'] = [set.size - 1]
-                item[curItem["productId"]]['price'] = [parseFloat(curItem['price'])]
-                item[curItem["productId"]]['productId'] = curItem['productId']
-                item[curItem["productId"]]['name'] = curItem['pakName']
-                item[curItem["productId"]]['quantityType'] = curItem['quantityType']
+                item[curItem["code"]] = {}
+                item[curItem["code"]]['date'] = [set.size - 1]
+                item[curItem["code"]]['price'] = [parseFloat(curItem['salePrice'])]
+                item[curItem["code"]]['code'] = curItem['code']
+                item[curItem["code"]]['name'] = curItem['name']
+                item[curItem["code"]]['brand'] = curItem['brand']
+                item[curItem["code"]]['brand'] = curItem['brand']
+                item[curItem["code"]]['volSize'] = curItem['volSize']
             }
         }
-        if (curItem['salePrice'] != null && !countDownDateList.includes(set.size - 1)) {
-            countDownDateList.push(set.size - 1)
-            countDownPriceList.push(parseFloat(curItem['salePrice']))
-            cdFinalRow = curItem
+        if (curItem['price'] != null && !pakSaveDateList.includes(set.size - 1)) {
+            console.log("hit")
+            pakSaveDateList.push(set.size - 1)
+            pakSavePriceList.push(parseFloat(curItem['price']))
+            psFinalRow = curItem
         }
     }
-    result["countdown"] = {}
-    result["countdown"]["date"] = countDownDateList
-    result["countdown"]["price"] = countDownPriceList
-    result["countdown"]["name"] = cdFinalRow['name']
-    result["countdown"]["brand"] = cdFinalRow['brand']
-    result["countdown"]["salePrice"] = parseFloat(cdFinalRow['salePrice'])
-    result["countdown"]["origPrice"] = parseFloat(cdFinalRow['origPrice'])
-    result["countdown"]["volSize"] = cdFinalRow['volSize']
-    result["countdown"]["image"] = cdFinalRow["image"]
-    result['paknsave'] = Object.values(item);
+    result["paknsave"] = {}
+    result["paknsave"]["date"] = pakSaveDateList
+    result["paknsave"]["price"] = pakSavePriceList
+    console.log(psFinalRow)
+    result["paknsave"]["name"] = psFinalRow['name']
+    result["paknsave"]["currentPrice"] = parseFloat(psFinalRow['price'])
+    result["paknsave"]["quantityType"] = psFinalRow['quantityType']
+    result['countdown'] = Object.values(item);
 
     res.status(200)
         .json({
-            dates : Array.from(set),
-            result
+                dates : Array.from(set),
+                result
             }
         );
 }

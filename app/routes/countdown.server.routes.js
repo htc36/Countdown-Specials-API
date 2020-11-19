@@ -12,4 +12,7 @@ module.exports = function(app) {
         .get(countdown.getPreviousPrices)
     app.route('/api/countdown/getSingleProduct')
         .get(countdown.getSingleProduct)
+    app.route('/api/countdown/getHistory')
+        .get(countdown.getHistory)
+
 };

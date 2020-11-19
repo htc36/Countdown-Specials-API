@@ -137,5 +137,72 @@ exports.getSingleProduct = async function(req, res) {
             .send(`ERROR getting convos ${err}`);
     }
 }
+//Added new query for a pak n save product also query if it is not in the linked table
+// Now need to figure out how the out put data of this controller function will be different for paknsave item, i.e have a list of countd
+exports.getHistory = async function (req, res) {
+    const code = req.query.code;
+    const location = req.query.location;
+    let history
+    let countDownHistory
+    let result = {}
+    try {
+            history = await countdown.getConnectedProductHistory(location, code)
+            if (history.length == 0) {
+                history = await countdown.getProductsHistory(code)
+            }
+    } catch (err) {
+        res.status(500)
+            .send(`ERROR getting convos ${err}`);
+    }
+
+    let item = {}
+    let set = new Set()
+    let countDownDateList = []
+    let countDownPriceList = []
+    let cdFinalRow
+    for (let index = 0; index < history.length; index++) {
+        const curItem = history[index]
+        if (curItem['date'] != null) {
+            set.add(new Date(history[index]['date']).toLocaleDateString('en-nz'))
+        } else {
+            set.add(new Date(history[index]['date2']).toLocaleDateString('en-nz'))
+        }
+        if (curItem["price"] != null) {
+            if (item.hasOwnProperty(curItem["productId"])) {
+                item[curItem["productId"]]['date'].push(set.size - 1)
+                item[curItem["productId"]]['price'].push(parseFloat(history[index]['price']))
+            } else {
+                item[curItem["productId"]] = {}
+                item[curItem["productId"]]['date'] = [set.size - 1]
+                item[curItem["productId"]]['price'] = [parseFloat(curItem['price'])]
+                item[curItem["productId"]]['productId'] = curItem['productId']
+                item[curItem["productId"]]['name'] = curItem['pakName']
+                item[curItem["productId"]]['quantityType'] = curItem['quantityType']
+            }
+        }
+        if (curItem['salePrice'] != null && !countDownDateList.includes(set.size - 1)) {
+            countDownDateList.push(set.size - 1)
+            countDownPriceList.push(parseFloat(curItem['salePrice']))
+            cdFinalRow = curItem
+        }
+    }
+    result["countdown"] = {}
+    result["countdown"]["date"] = countDownDateList
+    result["countdown"]["price"] = countDownPriceList
+    result["countdown"]["name"] = cdFinalRow['name']
+    result["countdown"]["brand"] = cdFinalRow['brand']
+    result["countdown"]["salePrice"] = parseFloat(cdFinalRow['salePrice'])
+    result["countdown"]["origPrice"] = parseFloat(cdFinalRow['origPrice'])
+    result["countdown"]["volSize"] = cdFinalRow['volSize']
+    result["countdown"]["image"] = cdFinalRow["image"]
+    result['paknsave'] = Object.values(item);
+
+    res.status(200)
+        .json({
+                dates : Array.from(set),
+                result
+            }
+        );
+}
 
 

@@ -8,6 +8,6 @@ module.exports = function(app) {
         .post(convo.linkProducts)
     app.route('/api/pakNsave/getProducts')
         .get(convo.getProducts)
-    app.route('/api/pakNsave/getSingleLinkedProductHistory')
-        .get(convo.getHistory)
+    app.route('/api/pakNsave/getHistory')
+        .get(convo.getHistoryPakSave)
 };
