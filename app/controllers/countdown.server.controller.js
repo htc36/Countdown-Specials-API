@@ -186,15 +186,15 @@ exports.getHistory = async function (req, res) {
             cdFinalRow = curItem
         }
     }
-    result["countdown"] = {}
-    result["countdown"]["date"] = countDownDateList
-    result["countdown"]["price"] = countDownPriceList
-    result["countdown"]["name"] = cdFinalRow['name']
-    result["countdown"]["brand"] = cdFinalRow['brand']
-    result["countdown"]["salePrice"] = parseFloat(cdFinalRow['salePrice'])
-    result["countdown"]["origPrice"] = parseFloat(cdFinalRow['origPrice'])
-    result["countdown"]["volSize"] = cdFinalRow['volSize']
-    result["countdown"]["image"] = cdFinalRow["image"]
+    result["countdown"] = [{}]
+    result["countdown"][0]["date"] = countDownDateList
+    result["countdown"][0]["price"] = countDownPriceList
+    result["countdown"][0]["name"] = cdFinalRow['name']
+    result["countdown"][0]["brand"] = cdFinalRow['brand']
+    result["countdown"][0]["salePrice"] = parseFloat(cdFinalRow['salePrice'])
+    result["countdown"][0]["origPrice"] = parseFloat(cdFinalRow['origPrice'])
+    result["countdown"][0]["volSize"] = cdFinalRow['volSize']
+    result["countdown"][0]["image"] = cdFinalRow["image"]
     result['paknsave'] = Object.values(item);
 
     res.status(200)

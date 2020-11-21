@@ -152,13 +152,12 @@ exports.getHistoryPakSave = async function (req, res) {
             psFinalRow = curItem
         }
     }
-    result["paknsave"] = {}
-    result["paknsave"]["date"] = pakSaveDateList
-    result["paknsave"]["price"] = pakSavePriceList
-    console.log(psFinalRow)
-    result["paknsave"]["name"] = psFinalRow['name']
-    result["paknsave"]["currentPrice"] = parseFloat(psFinalRow['price'])
-    result["paknsave"]["quantityType"] = psFinalRow['quantityType']
+    result["paknsave"] = [{}]
+    result["paknsave"][0]["date"] = pakSaveDateList
+    result["paknsave"][0]["price"] = pakSavePriceList
+    result["paknsave"][0]["name"] = psFinalRow['name']
+    result["paknsave"][0]["currentPrice"] = parseFloat(psFinalRow['price'])
+    result["paknsave"][0]["quantityType"] = psFinalRow['quantityType']
     result['countdown'] = Object.values(item);
 
     res.status(200)
