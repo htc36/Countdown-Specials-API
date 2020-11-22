@@ -175,7 +175,7 @@ exports.getHistory = async function (req, res) {
                 item[curItem["productId"]] = {}
                 item[curItem["productId"]]['date'] = [set.size - 1]
                 item[curItem["productId"]]['price'] = [parseFloat(curItem['price'])]
-                item[curItem["productId"]]['productId'] = curItem['productId']
+                item[curItem["productId"]]['id'] = curItem['productId']
                 item[curItem["productId"]]['name'] = curItem['pakName']
                 item[curItem["productId"]]['quantityType'] = curItem['quantityType']
             }
