@@ -146,7 +146,6 @@ exports.getHistoryPakSave = async function (req, res) {
             }
         }
         if (curItem['price'] != null && !pakSaveDateList.includes(set.size - 1)) {
-            console.log("hit")
             pakSaveDateList.push(set.size - 1)
             pakSavePriceList.push(parseFloat(curItem['price']))
             psFinalRow = curItem
@@ -158,7 +157,7 @@ exports.getHistoryPakSave = async function (req, res) {
     result["paknsave"][0]["name"] = psFinalRow['name']
     result["paknsave"][0]["currentPrice"] = parseFloat(psFinalRow['price'])
     result["paknsave"][0]["quantityType"] = psFinalRow['quantityType']
-    result["paknsave"][0]["id"] = psFinalRow['productId']
+    result["paknsave"][0]["id"] = code
     result['countdown'] = Object.values(item);
 
     res.status(200)
