@@ -158,6 +158,7 @@ exports.getHistoryPakSave = async function (req, res) {
     result["paknsave"][0]["name"] = psFinalRow['name']
     result["paknsave"][0]["currentPrice"] = parseFloat(psFinalRow['price'])
     result["paknsave"][0]["quantityType"] = psFinalRow['quantityType']
+    result["paknsave"][0]["id"] = psFinalRow['productId']
     result['countdown'] = Object.values(item);
 
     res.status(200)
