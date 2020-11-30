@@ -9,11 +9,12 @@ exports.getProducts = async function(req, res) {
     const order = req.query.order;
     const offset = req.query.offset;
     const limit = req.query.limit;
+    const store = req.query.store;
     const sort = req.query.sort;
     // let query = "FROM `" + name + "` WHERE";
     let query
     if (date != null) {
-        query = "FROM psProducts JOIN psPrices ON psProducts.productId = psPrices.productId AND date = '" + date + "'"
+        query = "FROM psProducts JOIN psPrices ON psProducts.productId = psPrices.productId AND date = '" + date + "' AND store = '" + store + "'"
     }else {
         query = "FROM psProducts"
     }
@@ -39,6 +40,7 @@ exports.getProducts = async function(req, res) {
     if (offset != null) {
         queryWithOffset = query + " OFFSET " + offset;
     }
+    console.log(query)
     try {
         let result
         if (queryWithOffset != ""){
