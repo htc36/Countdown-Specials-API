@@ -20,7 +20,8 @@ exports.getSingleUnJoinedProduct = async function(query, offset) {
 };
 
 exports.getProductsHistory = async function(code, store) {
-    const q = "SELECT psProducts.name, psProducts.quantityType, psPrices.price, psPrices.date FROM psProducts JOIN " +
+    const q = "SELECT psProducts.name, psProducts.quantityType, psPrices.price, psPrices.date " +
+        "FROM psProducts JOIN " +
         "psPrices ON psProducts.productId = psPrices.productId AND psPrices.productId = '" + code + "' AND " +
         "psPrices.store = '" + store + "'"
     let connection = await db.getPool().getConnection();
@@ -30,16 +31,19 @@ exports.getProductsHistory = async function(code, store) {
     return row2;
 };
 
-exports.getConnectedProductHistoryPaknSave = async function(location, code) {
+exports.getConnectedProductHistoryPaknSave = async function(location, code, cdStoreCode, psStoreCode) {
     const q = "SELECT psProducts.quantityType, psProducts.name, psPrices.price, psPrices.date, cdProducts.name, cdProducts.brand, cdProducts.volSize," +
-        " cdPrices.salePrice, cdPrices.date as date2, cdProducts.code FROM psProducts JOIN psPrices ON psProducts.productId = psPrices.productId AND psProducts.productId" +
-        " = '" + code + "' JOIN linkedSupermarkets on psPrices.productId = linkedSupermarkets. pakNsaveID AND psPrices.store = '" + location + "' LEFT JOIN " +
-        "cdPrices ON linkedSupermarkets.countdownID = cdPrices.code AND cdPrices.date = psPrices.date LEFT JOIN cdProducts ON cdPrices.code = cdProducts.code " +
+        " cdPrices.salePrice, cdPrices.date as date2, cdProducts.code" +
+        " FROM psProducts JOIN psPrices ON psProducts.productId = psPrices.productId AND psProducts.productId" +
+        " = '" + code + "' JOIN linkedSupermarkets on psPrices.productId = linkedSupermarkets. pakNsaveID AND psPrices.store = '" + psStoreCode + "' LEFT JOIN " +
+        "cdPrices ON linkedSupermarkets.countdownID = cdPrices.code AND cdPrices.date = psPrices.date AND (cdPrices.storeCode = '" + cdStoreCode + "' OR cdPrices.storeCode = '0') " +
+        "LEFT JOIN cdProducts ON cdPrices.code = cdProducts.code " +
         "UNION " +
         "SELECT psProducts.quantityType, psProducts.name, psPrices.price, psPrices.date, cdProducts.name, cdProducts.brand, cdProducts.volSize, " +
-        "cdPrices.salePrice, cdPrices.date, cdProducts.code FROM cdProducts JOIN cdPrices ON cdPrices.code = cdProducts.code JOIN linkedSupermarkets on cdProducts.code = " +
+        "cdPrices.salePrice, cdPrices.date, cdProducts.code " +
+        "FROM cdProducts JOIN cdPrices ON cdPrices.code = cdProducts.code AND cdPrices.storeCode = '" + cdStoreCode + "' JOIN linkedSupermarkets on cdProducts.code = " +
         "linkedSupermarkets.countdownID JOIN psProducts ON linkedSupermarkets.pakNsaveID = psProducts.productId AND psProducts.productId = '" + code + "'" +
-        " LEFT JOIN psPrices ON psProducts.productId = psPrices.productId AND cdPrices.date = psPrices.date AND psPrices.store = '" + location + "' " +
+        " LEFT JOIN psPrices ON psProducts.productId = psPrices.productId AND cdPrices.date = psPrices.date AND psPrices.store = '" + psStoreCode + "' " +
         "ORDER BY COALESCE(date, date2)"
     let connection = await db.getPool().getConnection();
     connection.changeUser({database : "specials4"});

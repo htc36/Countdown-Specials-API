@@ -14,6 +14,7 @@ module.exports = function() {
 
     require('../app/routes/pakNsave.server.routes.js')(app);
     require('../app/routes/countdown.server.routes.js')(app);
+    require('../app/routes/general.server.routes.js')(app);
 
     return app;
 }

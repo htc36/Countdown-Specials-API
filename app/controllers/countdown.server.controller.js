@@ -9,11 +9,12 @@ exports.getProducts = async function(req, res) {
     const order = req.query.order;
     const offset = req.query.offset;
     const limit = req.query.limit;
+    const cdStoreCode = req.query.storeCode
     const sort = req.query.sort;
     // let query = "FROM `" + name + "` WHERE";
     let query
     if (name != null) {
-        query = "FROM cdProducts JOIN cdPrices ON cdProducts.code = cdPrices.code AND date = '" + name + "'"
+        query = "FROM cdProducts JOIN cdPrices ON cdProducts.code = cdPrices.code AND date = '" + name + "' AND storeCode = '" + cdStoreCode + "'"
     }else {
         query = "FROM cdProducts"
     }
@@ -142,13 +143,15 @@ exports.getSingleProduct = async function(req, res) {
 exports.getHistory = async function (req, res) {
     const code = req.query.code;
     const location = req.query.location;
+    const cdStoreCode = req.query.cdStoreCode
+    const psStoreCode = req.query.psStoreCode
     let history
     let countDownHistory
     let result = {}
     try {
-            history = await countdown.getConnectedProductHistory(location, code)
+            history = await countdown.getConnectedProductHistory(location, code, cdStoreCode, psStoreCode)
             if (history.length == 0) {
-                history = await countdown.getProductsHistory(code)
+                history = await countdown.getProductsHistory(code, cdStoreCode)
             }
     } catch (err) {
         res.status(500)
@@ -178,6 +181,16 @@ exports.getHistory = async function (req, res) {
                 item[curItem["productId"]]['id'] = curItem['productId']
                 item[curItem["productId"]]['name'] = curItem['pakName']
                 item[curItem["productId"]]['quantityType'] = curItem['quantityType']
+                item[curItem["productId"]]['psLat'] = curItem['psLat']
+                item[curItem["productId"]]['psLng'] = curItem['psLng']
+                // SELECT cs.storeName as cdStoreName, cs.lat as cdLat, cs.lng as cdLng, cdPrices.date as csDate, cdPrices.salePrice as cdPrice, psStores.storeName as psStoreName, psStores.lat as psLat, psStores.lng as psLng, psPrices.date as psDate, psPrices.price as psPrice
+                // FROM cdPrices
+                // JOIN cdProducts ON cdPrices.code = cdProducts.code and cdProducts.code = '10051' and cdPrices.storeCode != 0 and cdPrices.date = '2021-01-04'
+                // JOIN countdownStores cs ON cdPrices.storeCode = cs.storeCode
+                // JOIN linkedSupermarkets ls ON cdPrices.code = ls.countdownID
+                // LEFT JOIN psPrices on cs.psStore = psPrices.store AND psPrices.productId = ls.pakNsaveID and psPrices.date = '2021-01-04'
+                // left JOIN psStores on psPrices.store = psStores.storeCode
+
             }
         }
         if (curItem['salePrice'] != null && !countDownDateList.includes(set.size - 1)) {
@@ -196,6 +209,8 @@ exports.getHistory = async function (req, res) {
     result["countdown"][0]["volSize"] = cdFinalRow['volSize']
     result["countdown"][0]["image"] = cdFinalRow["image"]
     result["countdown"][0]["id"] = code
+    result["countdown"][0]["csLat"] = cdFinalRow["csLat"]
+    result["countdown"][0]["csLng"] = cdFinalRow["csLng"]
     result['paknsave'] = Object.values(item);
 
     res.status(200)

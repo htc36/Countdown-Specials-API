@@ -9,12 +9,13 @@ exports.getProducts = async function(req, res) {
     const order = req.query.order;
     const offset = req.query.offset;
     const limit = req.query.limit;
-    const store = req.query.store;
+    const storeCode = req.query.storeCode;
     const sort = req.query.sort;
     // let query = "FROM `" + name + "` WHERE";
     let query
     if (date != null) {
-        query = "FROM psProducts JOIN psPrices ON psProducts.productId = psPrices.productId AND date = '" + date + "' AND store = '" + store + "'"
+        query = "FROM psProducts JOIN psPrices ON psProducts.productId = psPrices.productId AND date = '" + date + "' " +
+            "AND psPrices.store = '" + storeCode + "' "
     }else {
         query = "FROM psProducts"
     }
@@ -40,7 +41,6 @@ exports.getProducts = async function(req, res) {
     if (offset != null) {
         queryWithOffset = query + " OFFSET " + offset;
     }
-    console.log(query)
     try {
         let result
         if (queryWithOffset != ""){
@@ -48,7 +48,6 @@ exports.getProducts = async function(req, res) {
         }else {
             result = await countdown.getAll(query);
         }
-        console.log(query)
         const total = await countdown.getCount(query);
         res.status(200)
             .json({
@@ -103,13 +102,15 @@ exports.linkProducts = async function(req, res) {
 exports.getHistoryPakSave = async function (req, res) {
     const code = req.query.code;
     const location = req.query.location;
+    const cdStoreCode = req.query.cdStoreCode
+    const psStoreCode = req.query.psStoreCode
     let history
     let countDownHistory
     let result = {}
     try {
-        history = await pakNsave.getConnectedProductHistoryPaknSave(location, code)
+        history = await pakNsave.getConnectedProductHistoryPaknSave(location, code, cdStoreCode, psStoreCode)
         if (history.length == 0) {
-            history = await pakNsave.getProductsHistory(code, location)
+            history = await pakNsave.getProductsHistory(code, psStoreCode)
             if(history.length == 0) {
                 res.status(404)
                     .send("No history found");
